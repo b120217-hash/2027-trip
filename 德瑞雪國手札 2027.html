@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E2940">
+<title>德瑞雪國手札 2027</title>
+<style>
+:root{
+  --snow:#F3F7F9; --paper:#FFFFFF; --ink:#10283C; --ink2:#4A6373; --glacier:#1D5B7B;
+  --ice:#DCE9F0; --ice2:#EBF3F7; --line:#C9D9E2; --red:#D6281F; --redbg:#FCE9E7; --gold:#9A6B12; --goldbg:#F8EFD8;
+  --night:#0E2940; --night2:#16405B;
+  --serif:"Noto Serif TC","Source Han Serif TC","Songti TC","PMingLiU","Noto Serif CJK TC",serif;
+  --sans:"PingFang TC","Noto Sans TC","Microsoft JhengHei","Heiti TC","Noto Sans CJK TC",system-ui,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--snow);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;
+  padding-bottom:calc(76px + env(safe-area-inset-bottom));-webkit-text-size-adjust:100%}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--glacier);outline-offset:2px;border-radius:6px}
+a{color:var(--glacier)}
+.wrap{max-width:600px;margin:0 auto;padding:0 16px}
+h1,h2,h3{font-family:var(--serif);margin:0;line-height:1.3}
+h2{font-size:22px;margin:30px 0 4px}
+.sub{color:var(--ink2);font-size:14px;margin:0 0 12px}
+.hidden{display:none!important}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:20;background:rgba(243,247,249,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+  padding-top:env(safe-area-inset-top)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;height:48px}
+.top b{font-family:var(--serif);font-size:17px;letter-spacing:.04em}
+.top span{font-size:13px;color:var(--ink2)}
+
+/* bottom nav */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--paper);border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom)}
+.nav .in{max-width:600px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.nav button{border:0;background:none;padding:8px 0 7px;min-height:62px;display:flex;flex-direction:column;align-items:center;gap:2px;
+  font-size:13px;color:var(--ink2)}
+.nav svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav button[aria-selected="true"]{color:var(--red);font-weight:700}
+
+/* hero */
+.hero{background:linear-gradient(180deg,var(--night),var(--night2));color:#fff;padding:22px 0 26px;border-radius:0 0 26px 26px}
+.hero .meta{font-size:14px;color:#B9D2E0;margin:0 0 6px}
+.hero h1{font-size:38px;letter-spacing:.06em;font-weight:900}
+.hero .dest{margin:6px 0 0;color:#E4EFF5;font-size:15px}
+.route{margin:16px -4px 6px}
+.route svg{width:100%;height:auto;display:block}
+.board{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.board div{background:#081B2B;border:1px solid #2A5570;border-radius:10px;text-align:center;padding:8px 0 6px}
+.board b{display:block;font-size:30px;line-height:1.1;font-variant-numeric:tabular-nums;font-family:var(--sans);font-weight:700}
+.board small{font-size:12px;color:#9DBFD1}
+.state{margin-top:10px;background:#081B2B;border:1px solid #2A5570;border-radius:10px;padding:12px 14px;text-align:center;font-size:18px}
+.state b{color:#fff}
+.state em{color:#FF8B80;font-style:normal;font-weight:700}
+.cdlabel{margin:14px 0 0;font-size:13px;color:#B9D2E0}
+
+/* tags */
+.ai{display:inline-block;font-size:12px;line-height:1;padding:3px 7px;border:1px dashed var(--glacier);color:var(--glacier);
+  background:var(--ice2);border-radius:999px;margin-left:6px;vertical-align:2px;white-space:nowrap}
+.chip{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;background:var(--ice);color:var(--glacier);font-weight:600}
+.chip.red{background:var(--redbg);color:var(--red)}
+.chip.gold{background:var(--goldbg);color:var(--gold)}
+.warn{color:var(--red);font-weight:700}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 14px;border-radius:12px;border:1px solid var(--glacier);
+  background:var(--paper);color:var(--glacier);font-weight:600;text-decoration:none;font-size:15px}
+.btn.fill{background:var(--glacier);color:#fff}
+.btn.red{background:var(--red);border-color:var(--red);color:#fff}
+.btn.sm{min-height:40px;padding:0 12px;font-size:14px}
+.btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* boarding pass */
+.pass{position:relative;display:flex;background:var(--paper);border:1px solid var(--line);border-radius:16px;margin:14px 0}
+.pass::before,.pass::after{content:"";position:absolute;right:calc(32% - 9px);width:18px;height:18px;border-radius:50%;background:var(--snow);border:1px solid var(--line)}
+.pass::before{top:-10px;clip-path:inset(50% 0 0 0)}
+.pass::after{bottom:-10px;clip-path:inset(0 0 50% 0)}
+.pass .m{flex:1;padding:14px 14px 14px 16px;min-width:0}
+.pass .s{width:32%;border-left:2px dashed var(--line);padding:14px 10px;text-align:center;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.pass .no{font-size:13px;color:var(--ink2)}
+.pass .big{font-family:var(--serif);font-size:24px;font-weight:700;color:var(--red)}
+.pass .rt{display:flex;align-items:center;gap:8px;font-family:var(--serif);font-size:22px;font-weight:700}
+.pass .rt i{flex:1;border-top:2px solid var(--line);position:relative;min-width:20px}
+.pass .rt i::after{content:"";position:absolute;right:-1px;top:-6px;border:5px solid transparent;border-left:8px solid var(--line)}
+.pass .ln{font-size:14px;color:var(--ink2);margin-top:4px}
+
+/* lodging rows */
+.lodge{background:var(--paper);border:1px solid var(--line);border-radius:14px;margin:12px 0;overflow:hidden}
+.lodge .hd{display:flex;gap:12px;padding:12px 14px;align-items:flex-start}
+.lodge .dt{min-width:64px;text-align:center;border-right:1px solid var(--line);padding-right:12px}
+.lodge .dt b{display:block;font-family:var(--serif);font-size:24px;line-height:1.1;color:var(--glacier)}
+.lodge .dt small{font-size:12px;color:var(--ink2)}
+.lodge h3{font-size:17px}
+.lodge .ct{font-size:14px;color:var(--ink2)}
+.lodge .bd{padding:0 14px 12px;font-size:14px}
+.lodge dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0 0 10px}
+.lodge dt{color:var(--ink2)} .lodge dd{margin:0;word-break:break-word}
+.lodge .acts{display:flex;gap:8px;flex-wrap:wrap}
+.lodge.pending{border-color:var(--red);border-style:dashed}
+
+/* ticket rows */
+.tk{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.tk:last-child{border-bottom:0}
+.tk .t{flex:1;min-width:0}
+.tk b{display:block;font-size:16px}
+.tk span{font-size:14px;color:var(--ink2)}
+.tgl{min-width:84px;min-height:44px;border-radius:12px;border:1px solid var(--line);background:var(--paper);font-size:14px;font-weight:600;color:var(--ink2)}
+.tgl[aria-pressed="true"]{background:var(--glacier);border-color:var(--glacier);color:#fff}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:4px 14px;margin:12px 0}
+
+/* emergency */
+.sos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sos a{display:block;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-decoration:none;color:var(--ink);min-height:64px}
+.sos a b{display:block;font-family:var(--serif);font-size:24px;color:var(--red);line-height:1.2}
+.sos a span{font-size:13px;color:var(--ink2)}
+.sos a.wide{grid-column:1/-1}
+.notes{margin:8px 0;padding:0;list-style:none}
+.notes li{padding:10px 0 10px 18px;border-bottom:1px solid var(--line);position:relative;font-size:15px}
+.notes li:last-child{border-bottom:0}
+.notes li::before{content:"";position:absolute;left:0;top:19px;width:7px;height:7px;border-radius:50%;background:var(--red)}
+.contactrow{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.contactrow div{flex:1;min-width:0}
+.form{display:grid;gap:8px;margin-top:8px}
+input[type=text],input[type=number],select{width:100%;min-height:46px;border:1px solid var(--line);border-radius:12px;padding:0 12px;background:var(--paper)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.row3{display:grid;grid-template-columns:1.2fr 1fr;gap:8px}
+.x{border:0;background:none;color:var(--ink2);min-width:44px;min-height:44px;font-size:20px}
+
+/* itinerary */
+.days{position:sticky;top:calc(48px + env(safe-area-inset-top));z-index:15;background:var(--snow);border-bottom:1px solid var(--line)}
+.days .sc{display:flex;gap:8px;overflow-x:auto;padding:10px 16px;scroll-snap-type:x proximity;scrollbar-width:none}
+.days .sc::-webkit-scrollbar{display:none}
+.pill{flex:0 0 auto;scroll-snap-align:center;min-width:62px;min-height:56px;padding:5px 8px;border-radius:14px;border:1px solid var(--line);background:var(--paper);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.25;position:relative}
+.pill b{font-family:var(--serif);font-size:16px}
+.pill small{font-size:12px;color:var(--ink2)}
+.pill[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.pill[aria-selected="true"] small{color:#C6D8E3}
+.pill.cny::after{content:"";position:absolute;top:5px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--red)}
+.dayhead{padding:18px 0 6px}
+.dayhead .k{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px}
+.dayhead h2{margin:0 0 8px;font-size:23px}
+.facts{display:grid;gap:6px;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:14px}
+.facts div{display:grid;grid-template-columns:52px 1fr;gap:8px}
+.facts span{color:var(--ink2)}
+.prog{height:8px;background:var(--ice);border-radius:99px;overflow:hidden;margin:12px 0 2px}
+.prog i{display:block;height:100%;background:var(--glacier);border-radius:99px;transition:width .3s}
+.tl{position:relative;margin:14px 0;padding:0;list-style:none}
+.tl::before{content:"";position:absolute;left:21px;top:20px;bottom:20px;width:2px;background:var(--line)}
+.it{position:relative;display:flex;gap:10px;align-items:flex-start;margin:0 0 12px;transition:opacity .2s}
+.cb{flex:0 0 44px;width:44px;height:44px;border-radius:50%;border:2px solid var(--glacier);background:var(--snow);display:flex;align-items:center;justify-content:center;padding:0;position:relative;z-index:1}
+.cb svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.cb[aria-checked="true"]{background:var(--glacier)}
+.cb[aria-checked="true"] svg{opacity:1}
+.card{flex:1;min-width:0;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:11px 13px}
+.it.done{opacity:.5}
+.it.done .nm{text-decoration:line-through;text-decoration-color:var(--ink2)}
+.tm{display:inline-block;font-size:13px;font-weight:700;color:var(--glacier);background:var(--ice2);padding:1px 9px;border-radius:999px;font-variant-numeric:tabular-nums}
+.tm.t{background:var(--redbg);color:var(--red)}
+.nm{font-size:17px;font-weight:700;margin:5px 0 2px;line-height:1.4}
+.md,.nt,.st{font-size:14px;color:var(--ink2);margin:2px 0}
+.st{color:var(--gold)}
+.card .btn{margin-top:8px}
+
+/* packing */
+.big-prog{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px;margin:16px 0}
+.big-prog .n{display:flex;justify-content:space-between;align-items:baseline}
+.big-prog b{font-family:var(--serif);font-size:32px}
+.pk h3{font-size:18px;margin:22px 0 4px;display:flex;justify-content:space-between;align-items:baseline}
+.pk h3 small{font-family:var(--sans);font-size:13px;color:var(--ink2);font-weight:400}
+.pi{display:flex;align-items:center;gap:6px;min-height:52px;border-bottom:1px solid var(--line)}
+.pi button.lab{flex:1;display:flex;align-items:center;gap:12px;text-align:left;border:0;background:none;padding:6px 0;min-height:52px}
+.pi .bx{flex:0 0 28px;width:28px;height:28px;border-radius:8px;border:2px solid var(--glacier);display:flex;align-items:center;justify-content:center;background:var(--paper)}
+.pi .bx svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.pi.on .bx{background:var(--glacier)} .pi.on .bx svg{opacity:1}
+.pi.on .tx{color:var(--ink2);text-decoration:line-through}
+.pi .tx small{display:block;color:var(--ink2);font-size:13px;line-height:1.4}
+.addrow{display:flex;gap:8px;margin:12px 0}
+.addrow input{flex:1}
+.clim{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:10px 0}
+.clim div{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:14px}
+.clim b{display:block;font-family:var(--serif);font-size:16px}
+
+/* expense */
+.sum{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px;margin:14px 0}
+.sum .line{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--ice)}
+.sum .line:last-child{border:0}
+.sum .tot{font-family:var(--serif);font-size:30px;font-weight:700;color:var(--ink)}
+.sum .each{background:var(--ink);color:#fff;border-radius:12px;padding:12px 14px;margin-top:10px;display:flex;justify-content:space-between;align-items:baseline}
+.sum .each b{font-family:var(--serif);font-size:26px}
+.bud{display:grid;grid-template-columns:1fr 92px 74px 44px;gap:6px;align-items:center;margin:6px 0}
+.bud input,.bud select{min-height:44px;padding:0 8px}
+.bud .nm2{font-size:15px;padding-left:2px}
+.exi{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.exi .l{flex:1;min-width:0}
+.exi b{display:block}
+.exi span{font-size:13px;color:var(--ink2)}
+.exi .am{text-align:right;font-variant-numeric:tabular-nums}
+.exi .am small{display:block;font-size:12px;color:var(--ink2)}
+.settle{margin:8px 0 0;padding:0;list-style:none}
+.settle li{padding:8px 12px;background:var(--ice2);border-radius:10px;margin:6px 0;font-size:15px}
+details{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:0 14px;margin:12px 0}
+summary{min-height:50px;display:flex;align-items:center;font-weight:700;cursor:pointer}
+details[open] summary{border-bottom:1px solid var(--line);margin-bottom:10px}
+details > div{padding-bottom:12px}
+.empty{color:var(--ink2);text-align:center;padding:20px 0;font-size:15px}
+.foot{font-size:12px;color:var(--ink2);margin:26px 0 10px;text-align:center}
+@media (max-width:370px){.hero h1{font-size:32px}.board b{font-size:25px}.bud{grid-template-columns:1fr 82px 66px 40px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><b id="ttl">德瑞雪國手札</b><span id="ttr">2027.1.27 – 2.15</span></div></header>
+
+<main>
+  <section id="tab-ov" role="tabpanel"></section>
+  <section id="tab-it" role="tabpanel" class="hidden"></section>
+  <section id="tab-pk" role="tabpanel" class="hidden"></section>
+  <section id="tab-ex" role="tabpanel" class="hidden"></section>
+</main>
+
+<nav class="nav" aria-label="主要導覽"><div class="in" role="tablist">
+  <button role="tab" data-tab="ov" aria-selected="true"><svg viewBox="0 0 24 24"><path d="M3 20 9.5 8l3.5 6 2-3 6 9z"/><circle cx="17" cy="6" r="2"/></svg>總覽</button>
+  <button role="tab" data-tab="it" aria-selected="false"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><path d="M6 8v8M11 6h9M11 18h9M11 12h6"/></svg>行程</button>
+  <button role="tab" data-tab="pk" aria-selected="false"><svg viewBox="0 0 24 24"><rect x="5" y="7" width="14" height="14" rx="3"/><path d="M9 7V4h6v3M9 12h6"/></svg>打包</button>
+  <button role="tab" data-tab="ex" aria-selected="false"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M7 15h4"/></svg>記帳</button>
+</div></nav>
+
+<script>
+"use strict";
+/* ============ 資料（來源：上傳的行程表；標示「AI 建議補充」者為依公開資料補齊，出發前請再核對） ============ */
+const TRIP={start:"2027-01-27",end:"2027-02-15",depart:"2027-01-27T23:25:00+08:00",ret:"2027-02-15T06:10:00+08:00"};
+const WD=["日","一","二","三","四","五","六"];
+const I=(time,name,mode,note,q,stay,ai)=>({time,name,mode:mode||"",note:note||"",q:q||name,stay:stay||"",ai:!!ai});
+const DAYS=[
+{d:1,date:"2027-01-27",lunar:"",title:"搭機離境",mode:"接駁車＋飛機",ticket:"接駁自費＋機票",lodge:"機上",stn:0,items:[
+ I("當日","台中住家接駁 → 桃園機場第二航廈","接駁車（自費）","","Taoyuan International Airport Terminal 2"),
+ I("23:25","長榮 BR071 起飛・桃園 → 慕尼黑","長榮航空","夜間航班；證件、訂房與票券憑證再確認一次","Taoyuan International Airport Terminal 2")]},
+{d:2,date:"2027-01-28",lunar:"",title:"慕尼黑機場 → 市區＋觀光",mode:"地鐵＋公車",ticket:"邦票（現場購買，09:00 後才能使用）",lodge:"慕尼黑 3 晚（含早餐）・Hampton by Hilton Munich City West",stn:1,items:[
+ I("07:05","BR071 抵達慕尼黑機場・入境","飛機","入境審查可能需要登錄生物特徵（EES），預留時間",
+   "Munich Airport",null,true),
+ I("上午","機場 → 市區飯店寄放行李","地鐵＋公車","邦票須現場購買，09:00 之後才可使用","Hampton by Hilton Munich City West, Landsberger Strasse 114, München"),
+ I("下午","瑪莉恩廣場","步行／地鐵","","Marienplatz München","約 1–1.5 小時",true),
+ I("下午","英國花園","地鐵","","Englischer Garten München","約 1.5 小時",true),
+ I("下午","慕尼黑王宮","步行","","Munich Residenz","約 1.5–2 小時",true)]},
+{d:3,date:"2027-01-29",lunar:"",title:"慕尼黑市區及近郊",mode:"地鐵＋公車",ticket:"邦票（現場購買，09:00 後才能使用）",lodge:"慕尼黑（第 2 晚）",stn:1,items:[
+ I("上午","慕尼黑市區 → 奧林匹克公園","地鐵＋公車","","Olympiapark München","約 2 小時",true),
+ I("下午","寧芬堡宮","地鐵＋公車","","Schloss Nymphenburg München","約 1.5–2 小時",true),
+ I("下午","寧芬堡宮 → 慕尼黑市區","地鐵＋公車","","München Hauptbahnhof")]},
+{d:4,date:"2027-01-30",lunar:"",title:"國王湖行程",mode:"火車＋船",ticket:"邦票（假日可提前使用）＋船票",lodge:"慕尼黑（第 3 晚）",stn:1,items:[
+ I("上午","慕尼黑市區 → 國王湖","火車（邦票）","週六為假日，邦票可提前使用","Königssee Seelände, Schönau am Königssee"),
+ I("上午","國王湖遊船","電動船（另購船票）","1909 年起湖上只准電動船與人力船；船停湖心時船員會吹小號展示回聲。冬季班次與航段請當日確認，Salet 站僅復活節至十月中營運",
+   "Königssee Schifffahrt Seelände","遊船單程到 St. Bartholomä 約 35 分鐘",true),
+ I("下午","國王湖 → 慕尼黑市區","火車","","München Hauptbahnhof")]},
+{d:5,date:"2027-01-31",lunar:"",title:"跨國移動：慕尼黑 → 聖加侖 → 琉森",mode:"地鐵＋跨國火車＋景觀列車",ticket:"邦票＋跨國火車票＋通行證",lodge:"琉森 4 晚（不含早餐）・Waldstätterhof Swiss Quality",stn:2,items:[
+ I("上午","慕尼黑退房，市區 → 聖加侖（跨國）","地鐵＋跨國火車","⚠ 班次尚未購票：請儘早購票或訂位","St. Gallen Bahnhof"),
+ I("上午","聖加侖車站寄放行李","","","St. Gallen Bahnhof"),
+ I("上午","聖加侖修道院圖書館","步行","修道院區 1983 年列入世界遺產；開放時間請先確認","Stiftsbibliothek St. Gallen","約 1 小時",true),
+ I("下午","聖加侖 → 琉森","景觀列車（通行證）","","Luzern Bahnhof"),
+ I("下午","入住飯店・放行李","步行","","Waldstaetterhof Swiss Quality Hotel, Zentralstrasse 4, 6003 Luzern"),
+ I("下午","琉森市區參觀","步行","建議看卡佩爾橋與湖畔","Kapellbrücke Luzern",null,true)]},
+{d:6,date:"2027-02-01",lunar:"",title:"琉森 → 瑞吉山、Stoos 登山觀景",mode:"渡輪＋登山列車＋火車＋公車＋纜車",ticket:"通行證",lodge:"琉森（第 2 晚）",stn:2,items:[
+ I("09:12","琉森渡輪站搭船 → 菲茲瑙（班次 3600，10:09 抵達）","渡輪","","Luzern Schiffstation Landungsbrücke"),
+ I("上午","菲茲瑙 → 瑞吉山頂（Rigi Kulm）","登山列車","","Rigi Kulm","約 1.5–2 小時",true),
+ I("上午","瑞吉山頂 → 阿斯葛道（Arth-Goldau）","火車","","Arth-Goldau Bahnhof"),
+ I("下午","阿斯葛道 → 施維芝 → Stoosbahnen","火車＋公車","","Stoosbahn Talstation Schwyz"),
+ I("下午","Stoos 登山觀景","Stoosbahnen 特殊纜車","","Stoos SZ Switzerland","約 1.5–2 小時",true),
+ I("下午","回搭纜車＋公車＋火車 → 琉森","","","Luzern Bahnhof")]},
+{d:7,date:"2027-02-02",lunar:"",title:"蘇黎世 → 萊茵瀑布 → 沙夫豪森 → 施泰因",mode:"火車＋地鐵＋公車",ticket:"通行證",lodge:"琉森（第 3 晚）",stn:2,items:[
+ I("上午","琉森 → 蘇黎世","火車","","Zürich Hauptbahnhof"),
+ I("上午","蘇黎世 → 萊茵瀑布（Rheinfallblick）","S9＋步行","歐洲最大的平原瀑布，寬約 150 公尺、落差約 23 公尺","Rheinfallblick Neuhausen am Rheinfall","約 1.5 小時",true),
+ I("上午","沙夫豪森＋觀光","S9","","Schaffhausen Altstadt",null,true),
+ I("下午","施泰因（Stein am Rhein）＋觀光","火車／公車","","Stein am Rhein Altstadt","約 1.5 小時",true),
+ I("下午","溫特圖爾 → 蘇黎世市區觀光 → 琉森","火車","","Zürich Bahnhofstrasse")]},
+{d:8,date:"2027-02-03",lunar:"",title:"琉森 → 鐵力士山、特呂布湖雪地活動",mode:"火車＋公車＋纜車",ticket:"通行證＋纜車 5 折",lodge:"琉森（第 4 晚）",stn:2,items:[
+ I("上午","琉森 → 英格堡（Engelberg）","火車＋公車","","Engelberg Bahnhof"),
+ I("上午","英格堡纜車站 → 特呂布湖 → 鐵力士山頂","纜車（通行證＋5 折）","搭乘世界第一座旋轉纜車；山頂改建施工中，部分區域可能受限，請出發前查官網","Titlis Talstation Engelberg","約 3–4 小時（含雪地）",true),
+ I("下午","特呂布湖雪地活動","纜車","","Trübsee Engelberg","約 1–1.5 小時",true),
+ I("下午","英格堡市區觀光","步行","","Engelberg Switzerland"),
+ I("下午","返回琉森・行李託運至車站","火車","託運後行李的送達日請在車站確認；託運期間備好隨身小包","Luzern Bahnhof",null,true)]},
+{d:9,date:"2027-02-04",lunar:"小年夜",title:"城市移動：琉森 → 因特拉肯",mode:"火車＋公車",ticket:"通行證",lodge:"因特拉肯 4 晚（不含早餐）・Apartment Alpegloggli",stn:3,items:[
+ I("上午","琉森 → 龍疆（Lungern）賞湖","火車","","Lungernsee Lungern"),
+ I("上午","布里恩茲（Brienz）賞湖","火車","","Brienz Bahnhof"),
+ I("上午","因特拉肯東站","火車","","Interlaken Ost Bahnhof"),
+ I("下午","伊瑟爾特瓦爾德（Iseltwald）賞湖","公車","","Iseltwald Switzerland"),
+ I("下午","因特拉肯東站 → 西站","火車","","Interlaken West Bahnhof"),
+ I("16:00–17:00","辦理公寓入住","","入住時段只有 16:00–17:00 且無夜間入住；請提前寄信告知抵達時間。辦理入住處為 GRIWA RENT AG 辦公室（東站對面）","Untere Bönigstrasse 8, 3800 Interlaken",null,true)]},
+{d:10,date:"2027-02-05",lunar:"除夕",title:"因特拉肯 → 少女峰",mode:"火車＋艾格快線纜車＋登山列車",ticket:"通行證＋纜車、登山列車 5 折～75 折",lodge:"因特拉肯（第 2 晚）",stn:3,items:[
+ I("上午","因特拉肯西站 → 東站 → 格林德瓦總站","火車","","Grindelwald Terminal"),
+ I("上午","艾格快線 → 艾格冰河站 → 少女峰站","纜車＋登山列車","少女峰車站海拔 3,454 公尺；高海拔氣溫低，穿足保暖","Jungfraujoch Top of Europe","約 2–3 小時",true),
+ I("下午","少女峰 → 小夏戴克","登山列車","","Kleine Scheidegg Bahnhof"),
+ I("下午","溫根 → 勞特布龍嫩・觀賞瀑布","登山列車","","Staubbach Falls Lauterbrunnen","約 1 小時",true),
+ I("下午","東站 → 西站・取行李","火車","","Interlaken West Bahnhof"),
+ I("晚上","除夕夜：公寓圍爐","","公寓可自行煮食，可到車站旁超市採買食材","Coop Interlaken Ost",null,true)]},
+{d:11,date:"2027-02-06",lunar:"初一",title:"因特拉肯 → First 登山、雪地活動",mode:"火車＋公車＋纜車",ticket:"通行證＋纜車、公車 5 折",lodge:"因特拉肯（第 3 晚）",stn:3,items:[
+ I("上午","因特拉肯西站 → 東站 → 格林德瓦","火車","","Grindelwald Bahnhof"),
+ I("上午","格林德瓦纜車站 → First 纜車站","纜車（5 折）","大年初一：2027 年 2 月 6 日，羊年開始","Grindelwald First Bergbahn","約 3 小時（含雪地活動）",true),
+ I("下午","First 雪地活動 → 回格林德瓦","纜車＋公車","","Grindelwald First"),
+ I("下午","因特拉肯西站・行李託運至車站","火車","為前往策馬特先託運行李","Interlaken West Bahnhof")]},
+{d:12,date:"2027-02-07",lunar:"初二",title:"因特拉肯 → 伯恩 → 圖恩 → 施皮茨",mode:"火車＋公車＋渡輪",ticket:"通行證",lodge:"因特拉肯（第 4 晚）",stn:3,items:[
+ I("上午","伯恩市區：噴泉、時鐘塔","火車","","Zytglogge Bern","約 2 小時",true),
+ I("上午","伯恩熊公園","步行","","Bärenpark Bern"),
+ I("下午","圖恩（Thun）城堡","火車","","Schloss Thun","約 1.5 小時",true),
+ I("下午","搭船到施皮茨（Spiez）・城堡參觀","渡輪","","Schloss Spiez","約 1 小時",true),
+ I("下午","施皮茨 → 因特拉肯西站","火車","","Interlaken West Bahnhof")]},
+{d:13,date:"2027-02-08",lunar:"初三",title:"城市移動：因特拉肯 → 策馬特",mode:"火車＋公車",ticket:"通行證＋公車免費",lodge:"策馬特 3 晚（含早餐）・Alpenblick Zermatt",stn:4,items:[
+ I("早上","公寓退房","","退房時段 08:00–10:00","Untere Bönigstrasse 8, 3800 Interlaken",null,true),
+ I("上午","因特拉肯西站 → 貝亞圖斯洞","公車／火車","","St. Beatus-Höhlen Sundlauenen","約 1.5 小時",true),
+ I("下午","返回因特拉肯西站","","","Interlaken West Bahnhof"),
+ I("下午","因特拉肯西站 → 施皮茨 → 菲斯普 → 策馬特","火車","","Zermatt Bahnhof"),
+ I("下午","策馬特市區觀光・取行李 → 飯店","步行","入住 15:00–22:00，前台 07:00–22:00；從車站步行約 11 分鐘","Alpenblick Zermatt, Oberdorfstrasse 106, 3920 Zermatt",null,true)]},
+{d:14,date:"2027-02-09",lunar:"初四",title:"策馬特 → 馬特洪峰觀景（戈爾內格拉特）",mode:"火車＋公車＋登山列車",ticket:"通行證＋登山列車 5 折",lodge:"策馬特（第 2 晚）",stn:4,items:[
+ I("上午","飯店 → 策馬特車站 → 戈爾內格拉特","齒軌列車（5 折）","觀景台海拔 3,089 公尺；單程約 33 分鐘；馬特洪峰高 4,478 公尺","Gornergrat Bahn Zermatt","約 2–3 小時",true),
+ I("下午","返回策馬特・市區觀光","齒軌列車","","Zermatt Bahnhofstrasse")]},
+{d:15,date:"2027-02-10",lunar:"初五",title:"策馬特 → 馬特洪峰冰川天堂",mode:"火車＋公車＋纜車",ticket:"通行證＋纜車 5 折",lodge:"策馬特（第 3 晚）",stn:4,items:[
+ I("上午","飯店 → 策馬特纜車站 → 冰川天堂觀景台","纜車（5 折）","Matterhorn Glacier Paradise 約 3,883 公尺，氣溫低","Matterhorn Glacier Paradise","約 2–3 小時",true),
+ I("下午","返回策馬特纜車站 → 飯店","纜車","","Zermatt Matterhorn Express Talstation"),
+ I("下午","策馬特市區觀光・行李託運至車站","步行","","Zermatt Bahnhof")]},
+{d:16,date:"2027-02-11",lunar:"初六",title:"城市移動：策馬特 → 盧加諾",mode:"冰河列車＋區間車＋公車",ticket:"通行證＋冰河列車定位",lodge:"盧加諾 2 晚（含早餐）・Hotel Admiral Lugano",stn:5,items:[
+ I("07:52","策馬特車站 → 冰河列車 920 → 安德瑪特","冰河列車（定位車票）","需先預約座位；飯店 11:00 前退房","Zermatt Bahnhof"),
+ I("下午","安德瑪特觀光","步行","","Andermatt Gotthardstrasse","約 1–2 小時",true),
+ I("下午","安德瑪特 → 格申恩 → 貝林佐納 → 帕拉迪索","區間火車","","Lugano-Paradiso Stazione"),
+ I("傍晚","入住 Hotel Admiral","步行","入住 14:00～15:00 起（各訂房網站不一）","Hotel Admiral Lugano, Via Geretta 15, 6902 Paradiso",null,true)]},
+{d:17,date:"2027-02-12",lunar:"初七",title:"盧加諾市區觀光",mode:"火車＋公車",ticket:"通行證",lodge:"盧加諾（第 2 晚）",stn:5,items:[
+ I("上午","飯店 → 帕拉迪索車站 → 盧加諾車站・取行李 → 飯店","火車","","Lugano Stazione FFS"),
+ I("上午","盧加諾市區觀光","步行","","Piazza della Riforma Lugano","約半天",true),
+ I("下午","盧加諾湖畔 → 帕拉迪索","火車／步行","","Lungolago Lugano",null,true)]},
+{d:18,date:"2027-02-13",lunar:"初八",title:"跨國移動：帕拉迪索 → 米蘭 → 馬爾彭薩機場",mode:"火車＋跨國火車",ticket:"通行證＋跨國火車票＋米蘭 1 日票",lodge:"米蘭機場飯店 1 晚（尚未訂）",stn:6,items:[
+ I("上午","帕拉迪索車站 → 米蘭車站（跨國）","跨國火車","⚠ 跨國火車票尚未購買","Milano Centrale"),
+ I("10:19","米蘭 → 馬爾彭薩機場（S50）・飯店寄放行李","S50","⚠ 班次未購票；機場飯店尚未預訂","Malpensa Airport Terminal 1"),
+ I("下午","米蘭市區觀光購物","米蘭 1 日票","","Duomo di Milano","約半天",true),
+ I("下午","返回馬爾彭薩機場飯店","S50","","Malpensa Airport Terminal 1")]},
+{d:19,date:"2027-02-14",lunar:"初九",title:"搭機離境",mode:"公車＋飛機",ticket:"機票",lodge:"機上",stn:6,items:[
+ I("上午","機場飯店 → 機場第一航廈","公車","","Malpensa Airport Terminal 1"),
+ I("11:00","長榮 BR096 起飛・米蘭 → 桃園","長榮航空","建議起飛前 3 小時抵達機場","Malpensa Airport Terminal 1",null,true)]},
+{d:20,date:"2027-02-15",lunar:"初十",title:"搭機入境",mode:"飛機＋接駁車",ticket:"機票＋接駁自費",lodge:"回到家",stn:7,items:[
+ I("06:10","BR096 抵達桃園機場","飛機","","Taoyuan International Airport"),
+ I("上午","桃園 → 台中住家","接駁車（自費）","","Taichung")]}
+];
+const STATIONS=[["桃園",24],["慕尼黑",86],["琉森",148],["因特拉肯",210],["策馬特",262],["盧加諾",310],["米蘭",350]];
+
+const FLIGHTS=[
+ {no:"BR071",al:"長榮航空",from:"桃園 TPE",to:"慕尼黑 MUC",dep:"1/27（三）23:25",arr:"1/28（四）07:05",note:"桃園機場第二航廈"},
+ {no:"BR096",al:"長榮航空",from:"米蘭 MXP",to:"桃園 TPE",dep:"2/14（日）11:00",arr:"2/15（一）06:10",note:"馬爾彭薩機場第一航廈"}];
+const LODGES=[
+ {id:"mu",city:"慕尼黑",name:"Hampton by Hilton Munich City West",d:"1/28 → 1/31",n:3,meal:"含早餐",addr:"Landsberger Strasse 114, 80339 München",tel:"",cin:"15:00 起",cout:"12:00 前",extra:"前台 24 小時營業"},
+ {id:"lu",city:"琉森",name:"Waldstätterhof Swiss Quality Hotel",d:"1/31 → 2/4",n:4,meal:"不含早餐",addr:"Zentralstrasse 4, 6003 Luzern",tel:"+41 41 227 12 71",cin:"15:00 起（至午夜）",cout:"11:00 前",extra:"位於琉森車站南側約 100 公尺；住客可領市區大眾運輸券（Zone 10、不含船），請向飯店確認"},
+ {id:"in",city:"因特拉肯",name:"Apartment Alpegloggli – GRIWA RENT AG",d:"2/4 → 2/8",n:4,meal:"不含早餐",addr:"入住辦理處：Untere Bönigstrasse 8, 3800 Interlaken（房源實際地址以訂房確認信為準）",tel:"",cin:"16:00–17:00（無夜間入住）",cout:"08:00–10:00",extra:"最多 6 位成人；自助入住，需提前告知抵達時間"},
+ {id:"ze",city:"策馬特",name:"Alpenblick Zermatt",d:"2/8 → 2/11",n:3,meal:"含早餐",addr:"Oberdorfstrasse 106, 3920 Zermatt",tel:"+41 27 966 26 00",cin:"15:00–22:00",cout:"11:00 前",extra:"前台 07:00–22:00；距車站步行約 11 分鐘"},
+ {id:"lg",city:"盧加諾",name:"Hotel Admiral Lugano",d:"2/11 → 2/13",n:2,meal:"含早餐",addr:"Via Geretta 15, 6902 Paradiso (Lugano)",tel:"",cin:"14:00～15:00 起",cout:"12:00 前",extra:"24 小時前台；在 Paradiso 區，距帕拉迪索車站步行約 5 分鐘"},
+ {id:"mi",city:"米蘭",name:"馬爾彭薩機場飯店（尚未預訂）",d:"2/13 → 2/14",n:1,meal:"",addr:"",tel:"",cin:"",cout:"",extra:"2/14 11:00 從第一航廈起飛，建議選第一航廈步行或接駁可達的飯店",pending:true}];
+const TICKETS=[
+ {id:"by",name:"邦票（Bayern-Ticket）",desc:"慕尼黑段使用；現場購買，09:00 後才能使用；假日可提前使用"},
+ {id:"pass",name:"瑞士通行證",desc:"瑞士段火車、公車、渡輪；纜車與登山列車享 5 折～75 折"},
+ {id:"x1",name:"跨國火車票：慕尼黑 → 聖加侖（1/31）",desc:"表單標示：班次未購票",warn:true},
+ {id:"gl",name:"冰河列車 920 訂位（2/11 07:52）",desc:"需定位車票，旺季可能額滿，請儘早訂位"},
+ {id:"x2",name:"跨國火車票：帕拉迪索 → 米蘭（2/13）＋ S50",desc:"表單標示：班次未購票",warn:true},
+ {id:"mi1",name:"米蘭 1 日票",desc:"2/13 米蘭市區觀光使用"},
+ {id:"cc",name:"纜車與登山列車折扣憑證",desc:"鐵力士山、少女峰、First、戈爾內格拉特、冰川天堂（5 折～75 折，依表單）"}];
+const SOS=[
+ ["112","歐盟統一緊急電話","德國、瑞士、義大利皆可撥打"],
+ ["110","德國警察","AI 建議補充"],
+ ["117","瑞士警察","AI 建議補充"],
+ ["144","瑞士救護車","AI 建議補充"],
+ ["118","瑞士消防（義大利為救護車）","AI 建議補充"],
+ ["1414","瑞士 Rega 空中救援","AI 建議補充"]];
+const NOTES=[
+ ["外交部緊急聯絡中心：海外撥 +886-800-085-095（24 小時，付費）；僅限海外急難，護照簽證問題請在上班時間洽領事事務局。",false],
+ ["駐德國、駐瑞士、駐義大利代表處電話請出發前到外交部領事事務局網站查詢，存入下方「自訂聯絡人」。",true],
+ ["邦票只能現場購買，09:00 前不能使用；週六日可提前使用。",false],
+ ["跨國火車（1/31、2/13）與 S50 班次尚未購票，米蘭機場飯店尚未預訂。",false],
+ ["因特拉肯公寓入住只有 16:00–17:00，且沒有夜間入住：2/4 請在 17:00 前到辦公室，並提前通知抵達時間。",true],
+ ["鐵力士山 Rotair 旋轉纜車 2026/12/13 起恢復，山頂改建施工至 2029 年，部分區域可能受限，出發前再看官網。",true],
+ ["ETIAS（歐洲旅行授權）原訂 2026 年底上路，目前傳出延至 2027 年；出發前請到歐盟官網確認是否需要申請。護照須含身分證統一編號，且效期在離開申根區後至少 3 個月。",true],
+ ["歐盟入境系統（EES）已啟用，首次入境需登錄指紋與臉部影像，抵達慕尼黑時預留較長入境時間。",true],
+ ["行李託運（2/3、2/6、2/10）期間約 2 晚只有隨身小包：換洗衣物、盥洗、藥品與充電器要隨身帶。",true]];
+
+const PACK=[
+ ["證件與錢包",[
+  ["護照","效期須在離開申根區後 3 個月以上，且含身分證統一編號"],["護照影本與雲端電子檔",""],
+  ["長榮電子機票 BR071／BR096",""],["6 家住宿訂房確認信","因特拉肯公寓需另備入住聯絡資訊"],
+  ["瑞士通行證、邦票、訂位憑證",""],["信用卡 2 張以上","分開放，備海外刷卡額度"],
+  ["歐元現金（德國、義大利）",""],["瑞士法郎現金","瑞士許多地方不收歐元"],["旅遊保險單與保險專線",""],["自訂聯絡人與緊急電話截圖",""]]],
+ ["衣物穿搭",[
+  ["防水保暖外套","少女峰、鐵力士山頂可能低於 -15°C"],["發熱內衣、長袖內層 4–5 件",""],["刷毛或羽絨中層",""],
+  ["防水防風長褲／雪褲",""],["防水防滑雪靴","雪地活動與冰面步行用"],["毛帽、防水手套、脖圍",""],
+  ["羊毛襪或排汗襪 5 雙以上",""],["太陽眼鏡／雪鏡","雪地反光強"],["暖暖包","手、腳與貼身口袋用"],["室內輕便衣物","公寓與飯店室內有暖氣"]]],
+ ["電子產品",[
+  ["手機與充電線",""],["行動電源","須放隨身行李"],["轉接頭","德國、義大利用 C／F／L 型，瑞士為 J 型；C 型兩孔插頭多數可用"],
+  ["多孔 USB 充電器",""],["eSIM 或漫遊上網","歐洲三國可通用的方案較方便"],["相機與記憶卡",""],["耳機",""]]],
+ ["個人藥品與盥洗",[
+  ["個人常備藥與處方箋英文版",""],["腸胃藥、止痛藥、感冒藥",""],["OK 繃與小急救包",""],
+  ["防曬乳與護唇膏","高山與雪地紫外線強"],["保濕乳液、護手霜","冬季乾冷"],["牙刷牙膏、盥洗包","歐洲飯店常不提供牙刷"],["口罩與乾洗手",""]]],
+ ["託運期間隨身小包（約 2 晚）",[
+  ["換洗衣物 2 套",""],["盥洗與保養小袋",""],["藥品與暖暖包",""],["充電線與行動電源",""]]],
+ ["6 人共用與春節",[
+  ["延長線與多孔插座","公寓與飯店插座少"],["洗衣袋與少量洗劑","因特拉肯公寓可能有洗衣機"],["折疊購物袋","瑞士超市塑膠袋要付費"],
+  ["紅包袋與春聯小物","除夕在因特拉肯、初一在 First"],["圍爐食材與調味小包","肉類與乳製品不可帶入歐盟，請以乾貨、調味料為主"],["保溫瓶",""]]]];
+const CLIMATE=[["慕尼黑・琉森","約 -5～5°C，常下雪"],["因特拉肯・策馬特","市區約 -8～3°C，山上更冷"],["少女峰・鐵力士山頂","可能低於 -15°C，風大"],["盧加諾・米蘭","約 0～10°C，較濕冷"]];
+const DEFAULT_BUDGET=["機票（長榮，6 人）","慕尼黑住宿","琉森住宿","因特拉肯住宿","策馬特住宿","盧加諾住宿","米蘭機場飯店","瑞士通行證（6 人）","邦票與跨國火車票","冰河列車訂位","旅遊保險","網路 eSIM"];
+
+/* ============ 狀態與儲存 ============ */
+const KEY="deRuiJournal.v1";
+const uid=()=>Math.random().toString(36).slice(2,9);
+function defaults(){return{tab:"ov",day:null,done:{},doc:{},pack:{},packCustom:[],
+  budget:DEFAULT_BUDGET.map(n=>({id:uid(),name:n,amt:"",cur:"TWD"})),exp:[],
+  names:["旅伴 1","旅伴 2","旅伴 3","旅伴 4","旅伴 5","旅伴 6"],rates:{TWD:1,EUR:36.5,CHF:39},contacts:[]}}
+let S=defaults();
+try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(defaults(),JSON.parse(r))}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+
+/* ============ 工具 ============ */
+const $=(s,r)=>(r||document).querySelector(s);
+const $$=(s,r)=>Array.from((r||document).querySelectorAll(s));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const mapUrl=q=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q);
+const AI='<span class="ai">AI 建議補充</span>';
+const ICON={pin:'<svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
+  nav:'<svg viewBox="0 0 24 24"><path d="M4 12 20 4l-6 16-2.5-6.5z"/></svg>',
+  tick:'<svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
+  tel:'<svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A15 15 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>'};
+const fmt=n=>Math.round(n).toLocaleString("en-US");
+const mdLabel=d=>{const t=new Date(d+"T00:00:00");return (t.getMonth()+1)+"/"+t.getDate()};
+const wdLabel=d=>WD[new Date(d+"T00:00:00").getDay()];
+function todayIndex(){const n=new Date(),k=n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")+"-"+String(n.getDate()).padStart(2,"0");
+  return DAYS.findIndex(x=>x.date===k)}
+function toTWD(a,c){return (parseFloat(a)||0)*(S.rates[c]||1)}
+
+/* ============ 分頁 ============ */
+function setTab(t){S.tab=t;save();
+  $$("[data-tab]").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===t)));
+  ["ov","it","pk","ex"].forEach(k=>$("#tab-"+k).classList.toggle("hidden",k!==t));
+  const T={ov:"德瑞雪國手札",it:"每日行程",pk:"行前打包",ex:"記帳與分帳"};$("#ttl").textContent=T[t];
+  if(t==="ov")renderOv();if(t==="it")renderIt();if(t==="pk")renderPk();if(t==="ex")renderEx();
+  window.scrollTo(0,0);
+  if(t==="it"){const a=$(".pill[aria-selected=true]");if(a)a.scrollIntoView({inline:"center",block:"nearest"})}}
+$$("[data-tab]").forEach(b=>b.addEventListener("click",()=>setTab(b.dataset.tab)));
+
+/* ============ 總覽 ============ */
+function routeSvg(ti){
+  const ridge="M0 112 L34 88 L58 100 L96 52 L118 72 L150 26 L176 66 L206 40 L236 96 L270 64 L312 100 L360 82 L360 150 L0 150Z";
+  let s='<svg viewBox="0 0 360 150" role="img" aria-label="行程路線：桃園、慕尼黑、琉森、因特拉肯、策馬特、盧加諾、米蘭"><path d="'+ridge+'" fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.55)" stroke-width="1.3" stroke-linejoin="round"/>';
+  s+='<path d="M150 26 l-6 14 8-4 4 10 4-9 8 6z" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1"/>';
+  s+='<line x1="24" y1="124" x2="350" y2="124" stroke="#6C95AB" stroke-width="2" stroke-dasharray="1 5" stroke-linecap="round"/>';
+  STATIONS.forEach((st,i)=>{const x=st[1];
+    s+='<circle cx="'+x+'" cy="124" r="4.5" fill="#0E2940" stroke="#fff" stroke-width="1.6"/>';
+    s+='<text x="'+x+'" y="141" text-anchor="middle" font-size="10" fill="#D3E4ED" font-family="sans-serif">'+st[0]+'</text>'});
+  if(ti!=null&&ti>=0){const x=STATIONS[ti][1];s+='<circle cx="'+x+'" cy="124" r="8" fill="#D6281F" stroke="#fff" stroke-width="2"/>'}
+  return s+'</svg>'}
+function renderOv(){
+  const ti=todayIndex(),stn=ti>=0?DAYS[ti].stn:null;
+  let h='<div class="hero"><div class="wrap"><p class="meta">2027.1.27（三）– 2.15（一）・共 20 天</p><h1>德瑞雪國手札</h1>'+
+   '<p class="dest">德國慕尼黑、瑞士雪山與湖區、義大利米蘭出境</p><div class="route">'+routeSvg(stn)+'</div><div id="cd"></div></div></div><div class="wrap">';
+  h+='<h2>航班</h2><p class="sub">資料來自行程表；時間皆為當地時間。</p>';
+  FLIGHTS.forEach(f=>{h+='<div class="pass"><div class="m"><div class="rt"><span>'+f.from.split(" ")[1]+'</span><i></i><span>'+f.to.split(" ")[1]+'</span></div>'+
+    '<div class="ln">'+f.from.split(" ")[0]+' → '+f.to.split(" ")[0]+'・'+f.al+'</div><div class="ln">起飛 '+f.dep+'<br>抵達 '+f.arr+'</div>'+
+    '<div class="ln">'+f.note+'</div></div><div class="s"><span class="no">航班</span><span class="big">'+f.no+'</span></div></div>'});
+  h+='<h2>住宿</h2><p class="sub">地址、入住與退房時間為'+AI.replace('class="ai"','class="ai"')+'，依各訂房網站公開資料整理，請以你的訂房確認信為準。</p>';
+  LODGES.forEach(L=>{const q=L.addr?(L.addr.indexOf("入住辦理處")===0?"Untere Bönigstrasse 8, 3800 Interlaken":L.addr):L.name;
+    h+='<div class="lodge'+(L.pending?' pending':'')+'"><div class="hd"><div class="dt"><b>'+L.n+'</b><small>晚</small></div><div><h3>'+esc(L.name)+'</h3>'+
+     '<div class="ct">'+L.city+'・'+L.d+(L.meal?'・'+L.meal:'')+'</div></div></div><div class="bd">';
+    if(L.pending){h+='<p class="warn" style="margin:0 0 8px">尚未預訂，請儘快處理。</p>'}
+    h+='<dl>'+(L.addr?'<dt>地址</dt><dd>'+esc(L.addr)+'</dd>':'')+(L.cin?'<dt>入住</dt><dd>'+L.cin+'</dd>':'')+(L.cout?'<dt>退房</dt><dd>'+L.cout+'</dd>':'')+
+     (L.tel?'<dt>電話</dt><dd>'+L.tel+'</dd>':'')+(L.extra?'<dt>備註</dt><dd>'+esc(L.extra)+'</dd>':'')+'</dl>'+(L.pending?'':'<p style="margin:-2px 0 10px">'+AI.replace('margin-left:6px','')+'<span style="font-size:12px;color:var(--ink2)"> 以上資訊</span></p>')+'<div class="acts">'+
+     (L.addr?'<a class="btn fill sm" target="_blank" rel="noopener" href="'+mapUrl(q)+'">'+ICON.pin+'開啟 Google 地圖</a>':'<a class="btn sm" target="_blank" rel="noopener" href="'+mapUrl("Malpensa Airport Terminal 1 hotel")+'">'+ICON.pin+'搜尋機場飯店</a>')+
+     (L.tel?'<a class="btn sm" href="tel:'+L.tel.replace(/\s/g,"")+'">'+ICON.tel+'撥打電話</a>':'')+'</div></div></div>'});
+  h+='<h2>票券與訂位</h2><p class="sub">點「已備妥」記錄進度。紅字為表單標示尚未購票的項目。</p><div class="panel">';
+  TICKETS.forEach(t=>{const on=!!S.doc[t.id];h+='<div class="tk"><div class="t"><b>'+(t.warn?'<span class="warn">待購　</span>':'')+esc(t.name)+'</b><span>'+esc(t.desc)+'</span></div>'+
+    '<button class="tgl" data-doc="'+t.id+'" aria-pressed="'+on+'">'+(on?'已備妥':'未備妥')+'</button></div>'});
+  h+='</div><h2>緊急聯絡與備忘</h2><p class="sub">點號碼即可撥打。當地號碼為'+AI+'，為通用公開號碼。</p><div class="sos">';
+  SOS.forEach(s=>{h+='<a href="tel:'+s[0]+'"><b>'+s[0]+'</b><span>'+s[1]+'</span></a>'});
+  h+='<a class="wide" href="tel:+886800085095"><b style="font-size:20px">+886-800-085-095</b><span>外交部緊急聯絡中心（24 小時，海外撥打需付費）</span></a></div>';
+  h+='<ul class="notes">';NOTES.forEach(n=>{h+='<li>'+esc(n[0])+(n[1]?AI:'')+'</li>'});h+='</ul>';
+  h+='<h3 style="font-size:18px;margin:18px 0 4px">自訂聯絡人</h3><p class="sub">加入代表處、保險公司、信用卡掛失、家人等電話。</p><div class="panel" id="contacts"></div>'+
+   '<div class="form"><div class="row2"><input type="text" id="cn" placeholder="名稱，例如：駐德代表處" aria-label="聯絡人名稱"><input type="text" id="cp" inputmode="tel" placeholder="電話" aria-label="電話"></div>'+
+   '<button class="btn fill" id="addc">新增聯絡人</button></div>';
+  h+='<p class="foot">資料已自動儲存在這支裝置的瀏覽器中，離線可用。</p></div>';
+  $("#tab-ov").innerHTML=h;renderContacts();tick();}
+function renderContacts(){const c=$("#contacts");if(!c)return;
+  c.innerHTML=S.contacts.length?S.contacts.map(x=>'<div class="contactrow"><div><b>'+esc(x.n)+'</b><br><a href="tel:'+esc(x.p.replace(/\s/g,""))+'">'+esc(x.p)+'</a></div><a class="btn sm" href="tel:'+esc(x.p.replace(/\s/g,""))+'">'+ICON.tel+'撥打</a><button class="x" data-delc="'+x.id+'" aria-label="刪除">×</button></div>').join(""):'<div class="empty">還沒有聯絡人</div>'}
+function tick(){const el=$("#cd");if(!el)return;
+  const now=Date.now(),dep=new Date(TRIP.depart).getTime(),ret=new Date(TRIP.ret).getTime();
+  if(now<dep){const s=Math.floor((dep-now)/1000),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),c=s%60;
+    el.innerHTML='<p class="cdlabel">距離出發（1/27 23:25 桃園起飛）</p><div class="board"><div><b>'+d+'</b><small>天</small></div><div><b>'+String(h).padStart(2,"0")+'</b><small>時</small></div><div><b>'+String(m).padStart(2,"0")+'</b><small>分</small></div><div><b>'+String(c).padStart(2,"0")+'</b><small>秒</small></div></div>'}
+  else if(now<=ret){const i=todayIndex();el.innerHTML='<div class="state"><em>旅程進行中</em>'+(i>=0?'<br><b>Day '+DAYS[i].d+'・'+esc(DAYS[i].title)+'</b>':'')+'</div>'}
+  else el.innerHTML='<div class="state"><b>旅程已圓滿結束</b><br>這本手札留給你回味</div>'}
+setInterval(()=>{if(S.tab==="ov")tick()},1000);
+
+/* ============ 行程 ============ */
+function curDay(){if(S.day==null){const t=todayIndex();S.day=t>=0?t:0}return Math.min(Math.max(S.day,0),DAYS.length-1)}
+function renderIt(){
+  const di=curDay(),D=DAYS[di];
+  let h='<div class="days"><div class="sc" role="tablist" aria-label="選擇天數">';
+  DAYS.forEach((x,i)=>{h+='<button class="pill'+(x.lunar?' cny':'')+'" role="tab" data-day="'+i+'" aria-selected="'+(i===di)+'"><b>D'+x.d+'</b><small>'+mdLabel(x.date)+'（'+wdLabel(x.date)+'）</small></button>'});
+  h+='</div></div><div class="wrap"><div class="dayhead"><div class="k"><span class="chip">'+mdLabel(D.date)+'（'+wdLabel(D.date)+'）</span>'+(D.lunar?'<span class="chip red">'+D.lunar+'</span>':'')+
+   (D.d>=9&&D.d<=11?'<span class="chip gold">春節在雪山</span>':'')+'</div><h2>Day '+D.d+'・'+esc(D.title)+'</h2>'+
+   '<div class="facts"><div><span>交通</span><b style="font-weight:600">'+esc(D.mode)+'</b></div><div><span>票券</span><b style="font-weight:600">'+esc(D.ticket)+'</b></div><div><span>住宿</span><b style="font-weight:600">'+esc(D.lodge)+'</b></div></div>';
+  const total=D.items.length,done=D.items.filter((_,i)=>S.done["d"+D.d+"-"+i]).length;
+  h+='<div class="prog" role="progressbar" aria-valuenow="'+done+'" aria-valuemax="'+total+'" aria-label="當日完成度"><i style="width:'+(total?done/total*100:0)+'%"></i></div><p class="sub" id="dayc">已完成 '+done+' / '+total+' 項</p></div><ol class="tl">';
+  D.items.forEach((it,i)=>{const k="d"+D.d+"-"+i,on=!!S.done[k],tm=/^\d/.test(it.time);
+    h+='<li class="it'+(on?' done':'')+'" data-k="'+k+'"><button class="cb" role="checkbox" aria-checked="'+on+'" aria-label="完成：'+esc(it.name)+'" data-chk="'+k+'">'+ICON.tick+'</button><div class="card">'+
+     '<span class="tm'+(tm?' t':'')+'">'+esc(it.time)+'</span><div class="nm">'+esc(it.name)+'</div>'+
+     (it.mode?'<div class="md">交通：'+esc(it.mode)+'</div>':'')+(it.stay?'<div class="st">建議停留：'+esc(it.stay)+AI+'</div>':'')+
+     (it.note?'<div class="nt">'+(it.note.indexOf("⚠")===0?'<span class="warn">'+esc(it.note)+'</span>':esc(it.note))+(it.ai&&!it.stay?AI:'')+'</div>':'')+
+     '<a class="btn sm" target="_blank" rel="noopener" href="'+mapUrl(it.q)+'">'+ICON.nav+'導航</a></div></li>'});
+  h+='</ol><div class="row2" style="margin-bottom:10px"><button class="btn" data-step="-1"'+(di===0?' disabled style="opacity:.4"':'')+'>前一天</button><button class="btn fill" data-step="1"'+(di===DAYS.length-1?' disabled style="opacity:.4"':'')+'>後一天</button></div></div>';
+  $("#tab-it").innerHTML=h;}
+
+/* ============ 打包 ============ */
+function packItems(){const out=[];PACK.forEach((c,ci)=>c[1].forEach((x,i)=>out.push({id:"p"+ci+"-"+i,cat:c[0],t:x[0],n:x[1]})));return out}
+function renderPk(){
+  let all=packItems();let customAll=S.packCustom;
+  const doneN=all.filter(x=>S.pack[x.id]).length+customAll.filter(x=>S.pack[x.id]).length,totN=all.length+customAll.length;
+  let h='<div class="wrap"><div class="big-prog"><div class="n"><span>打包完成度</span><b id="pkn">'+(totN?Math.round(doneN/totN*100):0)+'%</b></div><div class="prog"><i id="pkb" style="width:'+(totN?doneN/totN*100:0)+'%"></i></div><div class="sub" id="pkc" style="margin:4px 0 0">已打包 '+doneN+' / '+totN+' 項</div></div>';
+  h+='<h2 style="margin-top:6px">這趟的天氣</h2><p class="sub">1 月底到 2 月中，'+AI+'，出發前一週請再看預報。</p><div class="clim">'+CLIMATE.map(c=>'<div><b>'+c[0]+'</b>'+c[1]+'</div>').join("")+'</div><div class="pk">';
+  PACK.forEach((c,ci)=>{const its=all.filter(x=>x.cat===c[0]),d=its.filter(x=>S.pack[x.id]).length;
+    h+='<h3>'+c[0]+'<small>'+d+' / '+its.length+'</small></h3>';
+    its.forEach(x=>{h+='<div class="pi'+(S.pack[x.id]?' on':'')+'"><button class="lab" data-pk="'+x.id+'" role="checkbox" aria-checked="'+!!S.pack[x.id]+'"><span class="bx">'+ICON.tick+'</span><span class="tx">'+esc(x.t)+(x.n?'<small>'+esc(x.n)+'</small>':'')+'</span></button></div>'})});
+  h+='<h3>我自己加的<small>'+customAll.filter(x=>S.pack[x.id]).length+' / '+customAll.length+'</small></h3>';
+  customAll.forEach(x=>{h+='<div class="pi'+(S.pack[x.id]?' on':'')+'"><button class="lab" data-pk="'+x.id+'" role="checkbox" aria-checked="'+!!S.pack[x.id]+'"><span class="bx">'+ICON.tick+'</span><span class="tx">'+esc(x.t)+'</span></button><button class="x" data-delp="'+x.id+'" aria-label="刪除">×</button></div>'});
+  h+='</div><div class="addrow"><input type="text" id="pnew" placeholder="臨時想到的物品" aria-label="新增物品"><button class="btn fill" id="padd">新增</button></div>';
+  h+='<p class="foot">AI 建議補充：氣候與物品清單依一般冬季前往歐洲山區的經驗整理。</p></div>';
+  $("#tab-pk").innerHTML=h;}
+
+/* ============ 記帳 ============ */
+function payerOpts(sel){return S.names.map((n,i)=>'<option value="'+i+'"'+(sel===i?' selected':'')+'>'+esc(n||("旅伴 "+(i+1)))+'</option>').join("")}
+function renderEx(){
+  let h='<div class="wrap"><div id="stats"></div>';
+  h+='<h2 style="margin-top:6px">快速記帳</h2><div class="form"><input type="text" id="en" placeholder="項目名稱，例如：少女峰午餐" aria-label="項目名稱">'+
+   '<div class="row3"><input type="number" id="ea" inputmode="decimal" min="0" step="any" placeholder="金額" aria-label="金額"><select id="ec" aria-label="幣別"><option value="EUR">歐元 EUR</option><option value="CHF">瑞郎 CHF</option><option value="TWD">台幣 TWD</option></select></div>'+
+   '<select id="ep" aria-label="付款人">'+payerOpts(0)+'</select><button class="btn red" id="eadd">新增花費</button></div>';
+  h+='<h2>花費紀錄</h2><div id="elist"></div>';
+  h+='<h2>預估費用（出發前）</h2><p class="sub">行程表沒有金額，請自行填入已知費用，系統會一起加總。</p><div id="bud"></div><div class="row2" style="margin-top:8px"><input type="text" id="bn" placeholder="新增預估項目" aria-label="預估項目名稱"><button class="btn" id="badd">新增項目</button></div>';
+  h+='<details><summary>旅伴名單與匯率</summary><div><p class="sub">改成真實名字，付款人與分帳結果會一起更新。</p><div class="form" id="nm">'+
+    S.names.map((n,i)=>'<input type="text" data-nm="'+i+'" value="'+esc(n)+'" aria-label="旅伴 '+(i+1)+'">').join("")+'</div>'+
+    '<p class="sub" style="margin-top:14px">參考匯率（換算成台幣）'+AI+'，為概略值，出發前請依銀行牌告更新。</p><div class="row2"><label>1 歐元 = <input type="number" id="r1" inputmode="decimal" step="0.01" value="'+S.rates.EUR+'"></label><label>1 瑞郎 = <input type="number" id="r2" inputmode="decimal" step="0.01" value="'+S.rates.CHF+'"></label></div></div></details>';
+  h+='<p class="foot">資料只存在這支裝置，清除瀏覽器資料會一併刪除。</p></div>';
+  $("#tab-ex").innerHTML=h;updateStats();renderList();renderBud();}
+function calc(){
+  const actual=S.exp.reduce((a,e)=>a+toTWD(e.amt,e.cur),0),bud=S.budget.reduce((a,b)=>a+toTWD(b.amt,b.cur),0);
+  const paid=S.names.map((_,i)=>S.exp.filter(e=>e.payer===i).reduce((a,e)=>a+toTWD(e.amt,e.cur),0));
+  return{actual,bud,all:actual+bud,paid,share:actual/6}}
+function settle(c){const net=c.paid.map(p=>p-c.share),cr=[],db=[];
+  net.forEach((v,i)=>{if(v>0.5)cr.push([i,v]);else if(v<-0.5)db.push([i,-v])});
+  const out=[];let i=0,j=0;while(i<db.length&&j<cr.length){const m=Math.min(db[i][1],cr[j][1]);out.push([db[i][0],cr[j][0],m]);db[i][1]-=m;cr[j][1]-=m;if(db[i][1]<0.5)i++;if(cr[j][1]<0.5)j++}return out}
+function updateStats(){const el=$("#stats");if(!el)return;const c=calc(),nm=i=>S.names[i]||("旅伴 "+(i+1));
+  const st=settle(c);
+  let h='<div class="sum"><div class="line"><span>預估費用（出發前）</span><b>NT$ '+fmt(c.bud)+'</b></div><div class="line"><span>現場花費</span><b>NT$ '+fmt(c.actual)+'</b></div>'+
+   '<div class="line"><span>合併總計</span><span class="tot">NT$ '+fmt(c.all)+'</span></div>'+
+   '<div class="each"><span>現場花費每人平均（6 人）</span><b>NT$ '+fmt(c.share)+'</b></div>'+
+   '<div class="each" style="background:var(--glacier)"><span>合併總計每人平均</span><b>NT$ '+fmt(c.all/6)+'</b></div></div>';
+  if(S.exp.length){h+='<div class="sum"><b style="font-family:var(--serif);font-size:18px">誰先墊了多少</b>'+S.names.map((n,i)=>'<div class="line"><span>'+esc(nm(i))+'</span><span>已付 NT$ '+fmt(c.paid[i])+'（'+(c.paid[i]-c.share>=0?'多付 ':'少付 ')+fmt(Math.abs(c.paid[i]-c.share))+'）</span></div>').join("")+
+    '<b style="font-family:var(--serif);font-size:18px;display:block;margin-top:10px">結算建議</b>'+(st.length?'<ul class="settle">'+st.map(s=>'<li>'+esc(nm(s[0]))+' 付給 '+esc(nm(s[1]))+'　<b>NT$ '+fmt(s[2])+'</b></li>').join("")+'</ul><button class="btn sm" id="cpy" style="margin-top:6px">複製結算</button>':'<div class="empty" style="padding:8px 0">目前不需要互相轉帳</div>')+'</div>'}
+  el.innerHTML=h}
+function renderList(){const el=$("#elist");if(!el)return;
+  el.innerHTML=S.exp.length?S.exp.slice().reverse().map(e=>{const nm=S.names[e.payer]||("旅伴 "+(e.payer+1));
+    return '<div class="exi"><div class="l"><b>'+esc(e.name)+'</b><span>'+esc(nm)+' 付款・'+e.date+'</span></div><div class="am">'+(e.cur==="TWD"?'NT$ '+fmt(e.amt):fmt(e.amt)+' '+e.cur+'<small>≈ NT$ '+fmt(toTWD(e.amt,e.cur))+'</small>')+'</div><button class="x" data-dele="'+e.id+'" aria-label="刪除">×</button></div>'}).join(""):'<div class="empty">還沒有記帳，花下第一筆就新增吧。</div>'}
+function renderBud(){const el=$("#bud");if(!el)return;
+  el.innerHTML=S.budget.map(b=>'<div class="bud"><span class="nm2">'+esc(b.name)+'</span><input type="number" inputmode="decimal" min="0" step="any" data-ba="'+b.id+'" value="'+esc(b.amt)+'" placeholder="金額" aria-label="'+esc(b.name)+'金額"><select data-bc="'+b.id+'" aria-label="幣別">'+["TWD","EUR","CHF"].map(c=>'<option'+(b.cur===c?' selected':'')+'>'+c+'</option>').join("")+'</select><button class="x" data-delb="'+b.id+'" aria-label="刪除">×</button></div>').join("")}
+
+/* ============ 事件 ============ */
+document.addEventListener("click",ev=>{
+  const t=ev.target.closest("button,a");if(!t)return;
+  if(t.dataset.doc){S.doc[t.dataset.doc]=!S.doc[t.dataset.doc];save();renderOvKeep();return}
+  if(t.dataset.day!=null&&t.classList.contains("pill")){S.day=+t.dataset.day;save();renderIt();const a=$(".pill[aria-selected=true]");if(a)a.scrollIntoView({inline:"center",block:"nearest"});window.scrollTo(0,0);return}
+  if(t.dataset.step){S.day=curDay()+(+t.dataset.step);save();renderIt();window.scrollTo(0,0);return}
+  if(t.dataset.chk){const k=t.dataset.chk;S.done[k]=!S.done[k];save();
+    const li=t.closest(".it");li.classList.toggle("done",!!S.done[k]);t.setAttribute("aria-checked",String(!!S.done[k]));
+    const D=DAYS[curDay()],n=D.items.filter((_,i)=>S.done["d"+D.d+"-"+i]).length;$("#dayc").textContent="已完成 "+n+" / "+D.items.length+" 項";$(".prog i").style.width=(n/D.items.length*100)+"%";return}
+  if(t.dataset.pk){S.pack[t.dataset.pk]=!S.pack[t.dataset.pk];save();const y=window.scrollY;renderPk();window.scrollTo(0,y);return}
+  if(t.dataset.delp){S.packCustom=S.packCustom.filter(x=>x.id!==t.dataset.delp);delete S.pack[t.dataset.delp];save();const y=window.scrollY;renderPk();window.scrollTo(0,y);return}
+  if(t.id==="padd"){addPack();return}
+  if(t.id==="addc"){const n=$("#cn").value.trim(),p=$("#cp").value.trim();if(!n||!p){(n?$("#cp"):$("#cn")).focus();return}
+    S.contacts.push({id:uid(),n,p});save();$("#cn").value="";$("#cp").value="";renderContacts();return}
+  if(t.dataset.delc){S.contacts=S.contacts.filter(x=>x.id!==t.dataset.delc);save();renderContacts();return}
+  if(t.id==="eadd"){addExp();return}
+  if(t.dataset.dele){S.exp=S.exp.filter(x=>x.id!==t.dataset.dele);save();updateStats();renderList();return}
+  if(t.id==="badd"){const n=$("#bn").value.trim();if(!n){$("#bn").focus();return}S.budget.push({id:uid(),name:n,amt:"",cur:"TWD"});save();$("#bn").value="";renderBud();return}
+  if(t.dataset.delb){S.budget=S.budget.filter(x=>x.id!==t.dataset.delb);save();renderBud();updateStats();return}
+  if(t.id==="cpy"){const c=calc(),st=settle(c),nm=i=>S.names[i]||("旅伴 "+(i+1));
+    const txt="德瑞旅遊分帳\n現場花費 NT$ "+fmt(c.actual)+"，每人 NT$ "+fmt(c.share)+"\n"+st.map(s=>nm(s[0])+" 付給 "+nm(s[1])+" NT$ "+fmt(s[2])).join("\n");
+    (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>{t.textContent="已複製"}).catch(()=>{const ta=document.createElement("textarea");ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");t.textContent="已複製"}catch(e){t.textContent="請手動複製"}ta.remove()});return}
+});
+function renderOvKeep(){const y=window.scrollY;renderOv();window.scrollTo(0,y)}
+function addPack(){const i=$("#pnew"),v=i.value.trim();if(!v){i.focus();return}S.packCustom.push({id:"c"+uid(),t:v});save();const y=window.scrollY;renderPk();window.scrollTo(0,y)}
+function addExp(){const n=$("#en"),a=$("#ea");const name=n.value.trim(),amt=parseFloat(a.value);
+  if(!name){n.focus();return}if(!(amt>0)){a.focus();return}
+  const now=new Date();S.exp.push({id:uid(),name,amt,cur:$("#ec").value,payer:+$("#ep").value,date:(now.getMonth()+1)+"/"+now.getDate()});
+  save();n.value="";a.value="";updateStats();renderList();n.focus()}
+document.addEventListener("keydown",ev=>{if(ev.key!=="Enter")return;const id=ev.target.id;if(id==="pnew")addPack();else if(id==="en"||id==="ea")addExp();else if(id==="cn"||id==="cp")$("#addc").click();else if(id==="bn")$("#badd").click()});
+document.addEventListener("change",ev=>{const t=ev.target;
+  if(t.dataset.ba){const b=S.budget.find(x=>x.id===t.dataset.ba);if(b){b.amt=t.value;save();updateStats()}}
+  else if(t.dataset.bc){const b=S.budget.find(x=>x.id===t.dataset.bc);if(b){b.cur=t.value;save();updateStats()}}
+  else if(t.id==="r1"||t.id==="r2"){const v=parseFloat(t.value);if(v>0){S.rates[t.id==="r1"?"EUR":"CHF"]=v;save();updateStats();renderList();renderBud()}}});
+document.addEventListener("input",ev=>{const t=ev.target;if(t.dataset.nm!=null){S.names[+t.dataset.nm]=t.value;save();updateStats();renderList();const p=$("#ep");if(p){const v=p.value;p.innerHTML=payerOpts(+v);p.value=v}}});
+
+setTab(S.tab||"ov");
+</script>
+</body>
+</html>
